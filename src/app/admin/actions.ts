@@ -23,7 +23,6 @@ import {
   updateBrand,
   deleteBrand,
 } from "@/lib/admin-api";
-import { writeSettings } from "@/lib/admin-settings";
 
 // Public pages cache catalog data for a minute; expire it so admin changes (especially
 // Active/Inactive) show on the website immediately.
@@ -53,7 +52,9 @@ export async function logoutAction(): Promise<void> {
 
 // ---- Products ----
 
-async function uploadedImageUrl(formData: FormData): Promise<string | undefined> {
+async function uploadedImageUrl(
+  formData: FormData,
+): Promise<string | undefined> {
   const image = formData.get("image");
   if (image instanceof File && image.size > 0) {
     return (await uploadProductImage(image)).url;
@@ -69,7 +70,10 @@ function parseVariations(raw: FormDataEntryValue | null): AdminVariation[] {
       .map((v) => ({
         id: typeof v.id === "number" ? v.id : undefined,
         label: String(v.label ?? "").trim(),
-        stock_status: v.stock_status === "outofstock" ? ("outofstock" as const) : ("instock" as const),
+        stock_status:
+          v.stock_status === "outofstock"
+            ? ("outofstock" as const)
+            : ("instock" as const),
       }))
       .filter((v) => v.id !== undefined || v.label !== "");
   } catch {
@@ -77,7 +81,9 @@ function parseVariations(raw: FormDataEntryValue | null): AdminVariation[] {
   }
 }
 
-async function productPayloadFromForm(formData: FormData): Promise<ProductInput> {
+async function productPayloadFromForm(
+  formData: FormData,
+): Promise<ProductInput> {
   const categoryId = Number(formData.get("category_id"));
   const brandId = Number(formData.get("brand_id"));
   const payload: ProductInput = {
@@ -87,10 +93,13 @@ async function productPayloadFromForm(formData: FormData): Promise<ProductInput>
     description: String(formData.get("description") ?? ""),
     short_description: String(formData.get("short_description") ?? ""),
     status: formData.get("status") === "draft" ? "draft" : "publish",
-    stock_status: formData.get("stock_status") === "outofstock" ? "outofstock" : "instock",
+    stock_status:
+      formData.get("stock_status") === "outofstock" ? "outofstock" : "instock",
     categories: categoryId ? [{ id: categoryId }] : [],
     brands: brandId ? [{ id: brandId }] : [],
-    ...(formData.has("variations_json") ? { variations: parseVariations(formData.get("variations_json")) } : {}),
+    ...(formData.has("variations_json")
+      ? { variations: parseVariations(formData.get("variations_json")) }
+      : {}),
   };
   const imageUrl = await uploadedImageUrl(formData);
   if (imageUrl) payload.image_url = imageUrl;
@@ -104,7 +113,10 @@ export async function createProductAction(formData: FormData): Promise<void> {
   redirect(`/admin/products/${product.id}`);
 }
 
-export async function updateProductAction(id: number, formData: FormData): Promise<void> {
+export async function updateProductAction(
+  id: number,
+  formData: FormData,
+): Promise<void> {
   await updateProduct(id, await productPayloadFromForm(formData));
   revalidatePath("/admin/products");
   revalidatePath(`/admin/products/${id}`);
@@ -131,7 +143,10 @@ async function requireAdmin(): Promise<void> {
   if (!(await isAdminAuthenticated())) throw new Error("Not signed in");
 }
 
-export async function setProductActiveAction(id: number, active: boolean): Promise<void> {
+export async function setProductActiveAction(
+  id: number,
+  active: boolean,
+): Promise<void> {
   await requireAdmin();
   await updateProduct(id, { stock_status: active ? "instock" : "outofstock" });
   revalidatePath("/admin/products");
@@ -146,12 +161,18 @@ export async function setVariationActiveAction(
 ): Promise<void> {
   await requireAdmin();
   const product = await getProduct(productId);
-  if (!product.variations.some((v) => v.id === variationId)) throw new Error("Flavor not found");
+  if (!product.variations.some((v) => v.id === variationId))
+    throw new Error("Flavor not found");
   // The API replaces the whole flavor list, so send every flavor with only this one changed.
   const variations: AdminVariation[] = product.variations.map((v) => ({
     id: v.id,
     label: v.label,
-    stock_status: v.id === variationId ? (active ? "instock" : "outofstock") : v.stock_status,
+    stock_status:
+      v.id === variationId
+        ? active
+          ? "instock"
+          : "outofstock"
+        : v.stock_status,
   }));
   await updateProduct(productId, { variations });
   revalidatePath(`/admin/products/${productId}`);
@@ -171,7 +192,10 @@ export async function createCategoryAction(formData: FormData): Promise<void> {
   redirect("/admin/categories");
 }
 
-export async function updateCategoryAction(id: number, formData: FormData): Promise<void> {
+export async function updateCategoryAction(
+  id: number,
+  formData: FormData,
+): Promise<void> {
   await updateCategory(id, {
     name: String(formData.get("name") ?? ""),
     description: String(formData.get("description") ?? ""),
@@ -200,7 +224,10 @@ export async function createBrandAction(formData: FormData): Promise<void> {
   redirect("/admin/brands");
 }
 
-export async function updateBrandAction(id: number, formData: FormData): Promise<void> {
+export async function updateBrandAction(
+  id: number,
+  formData: FormData,
+): Promise<void> {
   await updateBrand(id, {
     name: String(formData.get("name") ?? ""),
     description: String(formData.get("description") ?? ""),
@@ -214,14 +241,4 @@ export async function deleteBrandAction(id: number): Promise<void> {
   await deleteBrand(id);
   revalidatePath("/admin/brands");
   refreshWebsite();
-}
-
-// ---- Settings ----
-
-export async function saveSettingsAction(formData: FormData): Promise<void> {
-  await writeSettings({
-    enquiryRecipientEmail: String(formData.get("enquiryRecipientEmail") ?? ""),
-  });
-  revalidatePath("/admin/settings");
-  redirect("/admin/settings?saved=1");
 }
