@@ -13,7 +13,7 @@ services:
     restart: unless-stopped
     environment:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MARIADB_DATABASE: catalog
+      MARIADB_DATABASE: october-9-2026
       MARIADB_USER: ${DB_USER}
       MARIADB_PASSWORD: ${DB_PASSWORD}
     volumes:
@@ -35,7 +35,7 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: "3306"
-      DB_NAME: catalog
+      DB_NAME: october-9-2026
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       API_KEY: ${CATALOG_API_KEY}
