@@ -39,11 +39,6 @@ export default async function CategoriesPage() {
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 p-4">
               <div className="min-w-0">
                 <h2 className="truncate text-base font-bold">{c.name}</h2>
-                {c.parent && (
-                  <p className="mt-1 truncate text-xs text-muted-foreground">
-                    {c.parent.name}
-                  </p>
-                )}
                 {typeof c.count === "number" && (
                   <p className="mt-1 text-xs text-muted-foreground">{c.count} products</p>
                 )}

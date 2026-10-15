@@ -89,7 +89,6 @@ export type Category = {
   count: number | null;
   description: string | null;
   image: { sourceUrl: string } | null;
-  parent: { databaseId: number; name: string; slug: string } | null;
 };
 
 export type Brand = {

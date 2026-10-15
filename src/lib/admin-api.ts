@@ -130,8 +130,6 @@ export type AdminTerm = {
   description: string;
   count: number;
   image: { id: number; src: string } | null;
-  parent_id?: number | null;
-  parent_name?: string | null;
 };
 
 export function listCategories() {
@@ -142,19 +140,11 @@ export function getCategory(id: number) {
   return apiFetch<AdminTerm>("/admin/categories.php", { searchParams: { id: String(id) } });
 }
 
-export function createCategory(data: {
-  name: string;
-  description?: string;
-  image_url?: string;
-  parent_id?: number | null;
-}) {
+export function createCategory(data: { name: string; description?: string; image_url?: string }) {
   return apiFetch<AdminTerm>("/admin/categories.php", { method: "POST", body: data });
 }
 
-export function updateCategory(
-  id: number,
-  data: { name: string; description?: string; image_url?: string; parent_id?: number | null },
-) {
+export function updateCategory(id: number, data: { name: string; description?: string; image_url?: string }) {
   return apiFetch<AdminTerm>("/admin/categories.php", {
     method: "PUT",
     searchParams: { id: String(id) },

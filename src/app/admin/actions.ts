@@ -181,22 +181,11 @@ export async function setVariationActiveAction(
 
 // ---- Categories ----
 
-function categoryParentIdFromForm(formData: FormData): number | null {
-  const raw = String(formData.get("parent_id") ?? "").trim();
-  if (raw === "") return null;
-  const id = Number(raw);
-  if (!Number.isSafeInteger(id) || id < 1) {
-    throw new Error("Parent category is invalid");
-  }
-  return id;
-}
-
 export async function createCategoryAction(formData: FormData): Promise<void> {
   await createCategory({
     name: String(formData.get("name") ?? ""),
     description: String(formData.get("description") ?? ""),
     image_url: await uploadedImageUrl(formData),
-    parent_id: categoryParentIdFromForm(formData),
   });
   revalidatePath("/admin/categories");
   refreshWebsite();
@@ -211,7 +200,6 @@ export async function updateCategoryAction(
     name: String(formData.get("name") ?? ""),
     description: String(formData.get("description") ?? ""),
     image_url: await uploadedImageUrl(formData),
-    parent_id: categoryParentIdFromForm(formData),
   });
   revalidatePath("/admin/categories");
   refreshWebsite();

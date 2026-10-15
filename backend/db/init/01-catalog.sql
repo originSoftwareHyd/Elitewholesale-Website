@@ -94,16 +94,13 @@ CREATE TABLE `categories` (
   `slug` varchar(255) NOT NULL,
   `description` text DEFAULT NULL,
   `image_url` varchar(500) DEFAULT NULL,
-  `parent_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `slug` (`slug`),
-  KEY `parent_id` (`parent_id`),
-  CONSTRAINT `categories_ibfk_parent` FOREIGN KEY (`parent_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL
+  UNIQUE KEY `slug` (`slug`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` (`id`, `name`, `slug`, `description`, `image_url`) VALUES
+INSERT INTO `categories` VALUES
 (1,'Disposable vapes','disposable-vapes',NULL,'/uploads/2025/05/Vapes-1.jpg'),
 (2,'E-Liquid','e-liquid',NULL,'/uploads/2025/03/15-image.png'),
 (3,'Cream chargers','cream-chargers',NULL,'/uploads/2025/03/12-Image.png'),
@@ -4216,3 +4213,4 @@ INSERT INTO `products` VALUES
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+

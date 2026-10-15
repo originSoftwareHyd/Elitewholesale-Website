@@ -32,20 +32,13 @@ export default async function AdminCategoriesPage({
       key: "name",
       header: "Name",
       render: (c) => (
-        <div>
-          <Link
-            href={`/admin/products?category=${c.id}`}
-            title={`View products in ${c.name}`}
-            className="font-semibold text-primary hover:underline"
-          >
-            {c.name}
-          </Link>
-          {c.parent_name && (
-            <p className="mt-1 text-xs text-muted-foreground">
-              Subcategory of {c.parent_name}
-            </p>
-          )}
-        </div>
+        <Link
+          href={`/admin/products?category=${c.id}`}
+          title={`View products in ${c.name}`}
+          className="font-semibold text-primary hover:underline"
+        >
+          {c.name}
+        </Link>
       ),
     },
     { key: "slug", header: "Slug", render: (c) => <span className="text-muted-foreground">{c.slug}</span> },
