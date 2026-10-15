@@ -28,7 +28,7 @@ export default function TermForm({
       </div>
       {withImage && (
         <div>
-          <label className="label">Parent category</label>
+          <label className="label">Subcategory of</label>
           <select
             name="parent_id"
             defaultValue={term?.parent_id ?? ""}
@@ -42,7 +42,7 @@ export default function TermForm({
             ))}
           </select>
           <p className="mt-1 text-xs text-muted-foreground">
-            Choose a parent to create a subcategory.
+            Select a parent category to make this a subcategory. Leave as none for a top-level category.
           </p>
         </div>
       )}

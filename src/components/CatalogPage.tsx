@@ -102,6 +102,7 @@ export default function CatalogPage({
   const current = Math.min(page, totalPages);
   const start = (current - 1) * CATALOG_PAGE_SIZE;
   const pageItems = items.slice(start, start + CATALOG_PAGE_SIZE);
+  const topLevelCategories = categories.filter((category) => !category.parent);
   const hrefFor = (n: number) => {
     const params = new URLSearchParams(queryParams);
     if (n > 1) params.set("page", String(n));
@@ -121,16 +122,34 @@ export default function CatalogPage({
         <aside className="glass hidden h-fit rounded-xl p-3 lg:block">
           <p className="section-label px-2 py-2">Departments</p>
           <nav className="mt-2 grid gap-1">
-            {categories.map((c) => (
-              <Link
-                key={c.slug}
-                href={`/product-category/${c.slug}`}
-                className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
-              >
-                <span className="truncate">{c.name}</span>
-                {typeof c.count === "number" && <span className="text-xs">{c.count}</span>}
-              </Link>
-            ))}
+            {topLevelCategories.map((category) => {
+              const subcategories = categories.filter(
+                (candidate) => candidate.parent?.databaseId === category.databaseId,
+              );
+              return (
+                <div key={category.slug}>
+                  <Link
+                    href={`/product-category/${category.slug}`}
+                    className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
+                  >
+                    <span className="truncate">{category.name}</span>
+                    {typeof category.count === "number" && <span className="text-xs">{category.count}</span>}
+                  </Link>
+                  {subcategories.map((subcategory) => (
+                    <Link
+                      key={subcategory.slug}
+                      href={`/product-category/${subcategory.slug}`}
+                      className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-lg py-2 pl-6 pr-3 text-sm text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
+                    >
+                      <span className="truncate">{subcategory.name}</span>
+                      {typeof subcategory.count === "number" && (
+                        <span className="text-xs">{subcategory.count}</span>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              );
+            })}
           </nav>
         </aside>
 
