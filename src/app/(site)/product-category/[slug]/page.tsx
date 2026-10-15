@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import CatalogPage, { parsePage } from "@/components/CatalogPage";
+import CategoryGrid from "@/components/CategoryGrid";
 import { getAllCategories, getCategoryBySlug, getProductsByCategory } from "@/lib/catalog";
 
 export async function generateMetadata({
@@ -29,7 +30,25 @@ export default async function CategoryPage({
   const category = await getCategoryBySlug(slug);
   if (!category) notFound();
 
-  const [items, categories] = await Promise.all([getProductsByCategory(slug), getAllCategories()]);
+  const categories = await getAllCategories();
+  const subcategories = categories.filter(
+    (candidate) => candidate.parent?.databaseId === category.databaseId,
+  );
+
+  if (subcategories.length > 0) {
+    return (
+      <div className="page-shell py-12">
+        <p className="section-label">Category</p>
+        <h1 className="mt-3 text-4xl font-black sm:text-5xl">{category.name}</h1>
+        <p className="mt-4 text-muted-foreground">
+          Choose a subcategory to browse its products.
+        </p>
+        <CategoryGrid categories={subcategories} />
+      </div>
+    );
+  }
+
+  const items = await getProductsByCategory(slug);
 
   return (
     <CatalogPage
