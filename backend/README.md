@@ -13,6 +13,16 @@ On the first boot of an empty database volume, `db/init/*.sql` creates the schem
 To reset to the seed: `docker compose down -v && docker compose up -d --build` (this DELETES all data
 edited through the admin panel since the seed).
 
+### Existing databases
+
+Existing database volumes need the category-parent migration once before deploying subcategory support.
+Back up the database first, then apply `db/migrations/001-category-parent.sql` from the backend directory
+using the same Compose file/environment as the database:
+
+    docker compose exec -T db sh -c 'mariadb -u root -p"$MARIADB_ROOT_PASSWORD" catalog' < db/migrations/001-category-parent.sql
+
+For production, add `-f docker-compose.prod.yml --env-file .env` to the `docker compose` command.
+
 ## Layout
 
 - `public/` web root: `products.php`, `categories.php`, `brands.php` (public reads);

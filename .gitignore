@@ -59,5 +59,6 @@ backend/public/uploads/*
 
 # catalog seed data for the backend database
 !backend/db/init/*.sql
+!backend/db/migrations/*.sql
 
 backend/backups/

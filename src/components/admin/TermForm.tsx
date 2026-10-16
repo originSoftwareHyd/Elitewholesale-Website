@@ -6,11 +6,13 @@ export default function TermForm({
   term,
   submitLabel,
   withImage = false,
+  parentCategories = [],
 }: {
   action: (formData: FormData) => Promise<void>;
   term?: AdminTerm;
   submitLabel: string;
   withImage?: boolean;
+  parentCategories?: AdminTerm[];
 }) {
   return (
     <form action={action} className="max-w-lg space-y-5 glass rounded-xl p-6">
@@ -24,6 +26,26 @@ export default function TermForm({
           className="field"
         />
       </div>
+      {withImage && (
+        <div>
+          <label className="label">Subcategory of</label>
+          <select
+            name="parent_id"
+            defaultValue={term?.parent_id ?? ""}
+            className="mt-1 field"
+          >
+            <option value="">None (top-level category)</option>
+            {parentCategories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Select a parent category to make this a subcategory. Leave as none for a top-level category.
+          </p>
+        </div>
+      )}
       <div>
         <label className="label">
           Description

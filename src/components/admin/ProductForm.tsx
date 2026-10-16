@@ -113,7 +113,7 @@ export default function ProductForm({
           <option value="">— None —</option>
           {categories.map((c) => (
             <option key={c.id} value={c.id}>
-              {c.name}
+              {c.parent_name ? `${c.parent_name} › ${c.name}` : c.name}
             </option>
           ))}
         </select>
