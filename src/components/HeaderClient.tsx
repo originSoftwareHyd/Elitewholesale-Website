@@ -75,11 +75,11 @@ export default function HeaderClient({
                     {openMenu === key && (
                       <div
                         className={`menu-solid absolute left-1/2 top-full z-50 -translate-x-1/2 rounded-xl p-3 ${
-                          key === "categories" ? "w-[320px]" : "max-h-[420px] w-[640px] overflow-y-auto"
+                          key === "categories" ? "w-[640px]" : "max-h-[420px] w-[640px] overflow-y-auto"
                         }`}
                       >
                         {key === "categories" ? (
-                          <nav className="grid gap-1">
+                          <nav className="grid grid-cols-2 gap-x-2 gap-y-1">
                             {topLevelCategories.map((category) => {
                               const subcategories = subcategoriesFor(category.databaseId);
                               return (
