@@ -3,9 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, CheckCircle2, Send, ShoppingBasket, Trash2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Send, ShoppingBasket, Trash2, TriangleAlert } from "lucide-react";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { QuantityStepper } from "@/components/ProductEnquirySelector";
+import { sendEnquiryAction } from "./actions";
 
 export default function EnquiryPageClient({ recipientEmail }: { recipientEmail: string }) {
   const { items, updateQuantity, removeItem, clearCart, totalCount } = useEnquiryCart();
@@ -14,32 +15,34 @@ export default function EnquiryPageClient({ recipientEmail }: { recipientEmail: 
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const lines = items.map(
-      (i) =>
-        `- ${i.productName}${i.variationLabel ? ` (${i.variationLabel})` : ""} x${i.quantity}`,
-    );
-    const body = [
-      `Name: ${name}`,
-      `Email: ${email}`,
-      `Phone: ${phone}`,
-      "",
-      "Requested items:",
-      ...lines,
-      "",
-      notes ? `Notes: ${notes}` : "",
-    ]
-      .filter(Boolean)
-      .join("\n");
+    setSending(true);
+    setError(null);
 
-    const mailto = `mailto:${recipientEmail}?subject=${encodeURIComponent(
-      "Wholesale Enquiry from " + (name || "website"),
-    )}&body=${encodeURIComponent(body)}`;
+    const result = await sendEnquiryAction({
+      name,
+      email,
+      phone,
+      notes,
+      items: items.map((i) => ({
+        productName: i.productName,
+        productSlug: i.productSlug,
+        variationLabel: i.variationLabel ?? null,
+        image: i.image,
+        quantity: i.quantity,
+      })),
+    });
 
-    window.location.href = mailto;
-    setSubmitted(true);
+    setSending(false);
+    if (result.ok) {
+      setSubmitted(true);
+    } else {
+      setError(result.error);
+    }
   }
 
   if (items.length === 0 && !submitted) {
@@ -73,12 +76,8 @@ export default function EnquiryPageClient({ recipientEmail }: { recipientEmail: 
           <CheckCircle2 className="mx-auto size-12 text-success" />
           <h2 className="mt-4 text-2xl font-black">Thank you!</h2>
           <p className="mx-auto mt-2 max-w-md text-muted-foreground">
-            Your email client should have opened with your enquiry pre-filled. If it didn&apos;t, email us
-            directly at{" "}
-            <a href={`mailto:${recipientEmail}`} className="font-semibold text-primary">
-              {recipientEmail}
-            </a>
-            .
+            Your enquiry has been emailed to our team. We&apos;ll follow up with wholesale pricing and
+            availability shortly.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link href="/shop" className="btn btn-primary">View All Products</Link>
@@ -162,9 +161,20 @@ export default function EnquiryPageClient({ recipientEmail }: { recipientEmail: 
                 <span className="label">Notes (optional)</span>
                 <textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} className="field min-h-28 resize-y" />
               </label>
-              <button type="submit" className="btn btn-primary">
+              {error && (
+                <div className="flex items-start gap-2 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                  <TriangleAlert className="mt-0.5 size-4 shrink-0" />
+                  <span>
+                    {error}{" "}
+                    <a href={`mailto:${recipientEmail}`} className="font-semibold underline">
+                      {recipientEmail}
+                    </a>
+                  </span>
+                </div>
+              )}
+              <button type="submit" disabled={sending} className="btn btn-primary">
                 <Send className="size-4" />
-                Send enquiry
+                {sending ? "Sending..." : "Send enquiry"}
               </button>
             </div>
           </form>

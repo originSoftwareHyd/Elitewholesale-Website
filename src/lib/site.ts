@@ -11,7 +11,7 @@ export const siteConfig = {
   },
   phone: "+1 (971) 678-2434",
   phoneHref: "tel:+19716782434",
-  email: "elitewholesalepdx@gmail.com",
+  email: "elitewholesalepdx4u@gmail.com",
 };
 
 export const WHOLESALE_PRICE_LABEL = "Contact us for wholesale pricing";

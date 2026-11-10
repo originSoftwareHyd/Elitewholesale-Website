@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/site";
+import ContactForm from "./ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -109,46 +110,7 @@ export default function ContactUsPage() {
               Fill out the form below and we&apos;ll follow up by email. For urgent wholesale
               orders, call or email us directly above.
             </p>
-            <form
-              action={`mailto:${siteConfig.email}`}
-              method="post"
-              encType="text/plain"
-              className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2"
-            >
-              <input
-                name="name"
-                type="text"
-                required
-                placeholder="Your Name"
-                className="field"
-              />
-              <input
-                name="email"
-                type="email"
-                required
-                placeholder="Your Email"
-                className="field"
-              />
-              <input
-                name="subject"
-                type="text"
-                placeholder="Subject"
-                className="field sm:col-span-2"
-              />
-              <textarea
-                name="message"
-                required
-                rows={5}
-                placeholder="Your Message"
-                className="field sm:col-span-2"
-              />
-              <button
-                type="submit"
-                className="btn btn-primary sm:col-span-2 sm:w-fit"
-              >
-                Send Message
-              </button>
-            </form>
+            <ContactForm />
           </div>
 
           <div className="glass overflow-hidden rounded-2xl">
