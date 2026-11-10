@@ -53,6 +53,13 @@ function wrapEmail(title: string, bodyHtml: string): string {
 </html>`;
 }
 
+// Product images are often stored as site-relative paths (e.g. "/uploads/2026/04/x.jpg"),
+// which the website resolves fine but email clients cannot - they need a full URL.
+function absoluteImageUrl(src: string): string {
+  if (/^https?:\/\//i.test(src)) return src;
+  return `https://${siteConfig.domain}${src.startsWith("/") ? "" : "/"}${src}`;
+}
+
 function infoRow(label: string, value: string): string {
   return `<tr>
     <td style="padding:4px 0;font-size:13px;color:${MUTED};width:90px;vertical-align:top;">${escapeHtml(label)}</td>
@@ -84,7 +91,7 @@ export function renderEnquiryEmail(data: EnquiryEmailData): { subject: string; h
     .map((item) => {
       const productUrl = `https://${siteConfig.domain}/product/${item.productSlug}`;
       const image = item.image
-        ? `<img src="${item.image}" width="56" height="56" alt="" style="display:block;width:56px;height:56px;border-radius:8px;object-fit:contain;background:#f1f5f9;border:1px solid ${BORDER};" />`
+        ? `<img src="${absoluteImageUrl(item.image)}" width="56" height="56" alt="" style="display:block;width:56px;height:56px;border-radius:8px;object-fit:contain;background:#f1f5f9;border:1px solid ${BORDER};" />`
         : `<div style="width:56px;height:56px;border-radius:8px;background:#f1f5f9;border:1px solid ${BORDER};"></div>`;
       return `<tr>
         <td style="padding:10px 0;border-top:1px solid ${BORDER};width:56px;">${image}</td>
